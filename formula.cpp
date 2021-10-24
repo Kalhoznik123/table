@@ -7,12 +7,15 @@
 #include <cctype>
 #include <sstream>
 #include <memory>
-
 using namespace std::literals;
+
+
 
 std::ostream& operator<<(std::ostream& output, FormulaError fe) {
    return output << fe.ToString();
 }
+
+
 
 namespace {
 class Formula : public FormulaInterface {
@@ -20,7 +23,7 @@ public:
     // Реализуйте следующие методы:
     explicit Formula(std::string expression)
         : ast_(ParseFormulaAST(std::move(expression))){
-        
+
     }
     Value Evaluate(const SheetInterface& sheet ) const override{
 
@@ -35,6 +38,7 @@ public:
                 return *it;
             }else if(const auto it = std::get_if<std::string>(&value)){
                 double  res = 0;
+
                 try {
                     res = std::stod(*it);
                 } catch (...) {
@@ -65,7 +69,9 @@ public:
     std::vector<Position> GetReferencedCells() const override{
         auto cells = ast_.GetCells();
         std::vector<Position> result{std::make_move_iterator(cells.begin()),std::make_move_iterator(cells.end())};
+
         std::sort(result.begin(),result.end());
+
         return result;
     }
 private:

@@ -5,7 +5,7 @@
 #include <string>
 #include <optional>
 #include "sheet.h"
-
+// Реализуйте следующие методы
 Cell::Cell(Sheet& sheet)
     :sheet_(sheet)
     ,impl_(std::make_unique<EmptyImpl>()){}
@@ -14,6 +14,8 @@ Cell::~Cell() {}
 
 void Cell::Set(std::string text) {
     using namespace std::literals;
+
+    UpdateRef();
     if (text.empty()) {
         UpdateRef();
         InvalidateCach();
@@ -32,7 +34,7 @@ void Cell::Set(std::string text) {
         impl_.swap(impl);
     }
     else {
-        // тут конструирум текст
+        // тут конструирум текст!!!
         UpdateRef();
         InvalidateCach();
         impl_ = std::make_unique<TextImpl>(std::move(text));
@@ -40,9 +42,9 @@ void Cell::Set(std::string text) {
 
 }
 
-void Cell::Clear() {
-    impl_ = std::make_unique<EmptyImpl>();
-}
+    void Cell::Clear() {
+        impl_ = std::make_unique<EmptyImpl>();
+    }
 
 Cell::Value Cell::GetValue() const {
     if(!prev_value)
@@ -64,17 +66,17 @@ std::vector<Position> Cell::GetReferencedCells() const{
 }
 
 bool Cell::IsReferenced() const{
-    return !parent_nodes_.empty();
+return !parent_nodes_.empty();
 }
 
 
 void Cell::UpdateRef(){
 
     for (CellInterface* child : child_nodes_) {
-        Cell* child_cell = dynamic_cast<Cell*>(child);
-        child_cell->child_nodes_.erase(this);
+           Cell* child_cell = dynamic_cast<Cell*>(child);
+           child_cell->child_nodes_.erase(this);
 
-    }
+       }
     //отчищаем свои зависимости
     child_nodes_.clear();
 
@@ -89,22 +91,23 @@ void Cell::UpdateRef(){
 }
 
 void Cell::InvalidateCach(){
-    //отчищаем свой кэш
-    if(prev_value){
-        prev_value = std::nullopt;
-    }
-    //если нет родителей т.е тех кто от нас зависит делаем return - выход из рекурсии
-    if(!IsReferenced()){
-        return;
-    }
-    //запускаем рекурсию по своим родителям с целью инвалидировать кэш у них
-    for(CellInterface* cell_interface: parent_nodes_){
+//отчищаем свой кэш
+if(prev_value){
+    prev_value = std::nullopt;
+}
 
-        Cell* cell  = dynamic_cast<Cell*>(cell_interface);
-        if(cell){
-            cell->InvalidateCach();
-        }
+//если нет родителей т.е тех кто от нас зависит делаем return - выход из рекурсии
+if(!IsReferenced()){
+    return;
+}
+//запускаем рекурсию по своим родителям с целью инвалидировать кэш у них
+for(CellInterface* cell_interface: parent_nodes_){
+
+    Cell* cell  = dynamic_cast<Cell*>(cell_interface);
+    if(cell){
+     cell->InvalidateCach();
     }
+}
 
 
 }
@@ -119,7 +122,7 @@ void Cell::CheckLoopReferences(const std::vector<Position>& leaves, const CellIn
         if (fd == root) {
             throw CircularDependencyException("ERROR: loop reference detected"s);
         }
-        // рекурсия есть рекурсия!
+        // запускаем рекурсию
         CheckLoopReferences(sheet_.GetCell(leaflet)->GetReferencedCells(), root);
     }
 }

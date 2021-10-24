@@ -1,7 +1,8 @@
 #pragma once
 
 #include "common.h"
-#include "formula.h"k
+#include "formula.h"
+
 #include <functional>
 #include <unordered_set>
 #include <set>
